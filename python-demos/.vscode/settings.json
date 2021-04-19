@@ -10,6 +10,7 @@
         "--strict"
     ],
     "python.linting.mypyEnabled": true,
+    "python.linting.pylintEnabled": true,
     "python.linting.pylintArgs": [
         "--max-line-length=79",
         "--unsafe-load-any-extension=y",
