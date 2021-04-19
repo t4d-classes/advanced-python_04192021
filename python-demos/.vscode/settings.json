@@ -1,0 +1,22 @@
+{
+    "python.pythonPath": "c:\\Users\\ericwgreene\\git\\advanced-python_04192021\\python-demos\\venv\\Scripts\\python.exe",
+    "python.formatting.autopep8Args": [
+        "--aggressive"
+    ],
+    "python.linting.mypyArgs": [
+        "--ignore-missing-imports",
+        "--follow-imports=silent",
+        "--show-column-numbers",
+        "--strict"
+    ],
+    "python.linting.mypyEnabled": true,
+    "python.linting.pylintArgs": [
+        "--max-line-length=79",
+        "--unsafe-load-any-extension=y",
+        "--ignore=.git,venv,.vscode,__pycache__"
+    ],
+    "python.linting.pylintUseMinimalCheckers": false,
+    "editor.rulers": [
+        79
+    ]
+}
