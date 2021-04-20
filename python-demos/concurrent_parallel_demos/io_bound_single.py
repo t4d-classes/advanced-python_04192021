@@ -11,7 +11,7 @@ def main() -> None:
 
     responses: list[str] = []
 
-    for working_day in business_days(date(2019,1,1), date(2019,1,31)):
+    for working_day in business_days(date(2019,1,1), date(2019,2,28)):
         working_day_str = working_day.strftime("%Y-%m-%d")
         url = "".join([
             "https://api.ratesapi.io/api/",
