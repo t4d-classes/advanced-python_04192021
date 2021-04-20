@@ -27,7 +27,6 @@ def business_days(start_date: date, end_date: date) -> Generator[
     for num in range((end_date - start_date).days + 1):
         the_date = start_date + timedelta(days=num)
         if (the_date.weekday() < 5) and (the_date not in us_holidays):
-            print("in the generator")
             yield the_date
 
 
