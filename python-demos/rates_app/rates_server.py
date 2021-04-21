@@ -6,6 +6,19 @@ import sys
 
 def rate_server() -> None:
     """rate server"""
+
+    # implement socket server
+    # the host and port should be received as parameters into this function
+
+    # - use "AF_INET" for IPv4
+    # - use "SOCK_STREAM" for TCP
+
+    # when a client connects, send the following string:
+    #     "Connected to the Rate Server"
+
+    # wire up an echo server which receives a string and echos back to
+    # the client the string that is received
+
     while True:
         pass
 
