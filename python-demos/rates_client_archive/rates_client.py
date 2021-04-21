@@ -6,11 +6,14 @@ import time
 import threading
 import queue
 import json
-import requests
+import pathlib
+import csv
 
+import requests
 from datetime_demos.business_days import business_days
 
 responses_done = threading.Event()
+processed_responses_done = threading.Event()
 
 class Rate(TypedDict):
     """ rate typed dictionary """
@@ -32,7 +35,8 @@ def get_rates(working_day: date, responses: queue.Queue[str]) -> None:
     responses.put(response.text)
 
 def process_rate(
-    responses: queue.Queue[str], processed_responses: list[Rate]) -> None:
+    responses: queue.Queue[str],
+    processed_responses: queue.Queue[Rate]) -> None:
     """ process rates into a typed dictionary """
 
     while True:
@@ -40,26 +44,49 @@ def process_rate(
             rate_data = responses.get(timeout=0.1)
             rate = json.loads(rate_data)
             print(f"processing rate for {rate['date']}")
-            processed_responses.append({
+            processed_responses.put({
                 "closing_date": datetime.strptime(rate["date"], "%Y-%m-%d"),
                 "eur": rate["rates"]["EUR"]
             })
+            responses.task_done()
         except queue.Empty:
             if responses_done.is_set():
                 break
             else:
                 continue
 
+def save_rates(processed_responses: queue.Queue[Rate]) -> None:
+    """ saves rates to a csv file """
+
+    with open(pathlib.Path("output", "euro-rates.csv"),
+            "w", newline="\n") as rates_file:
+
+        rates_csv = csv.writer(rates_file)
+        while True:
+            try:
+                rate = processed_responses.get(timeout=0.1)
+                rates_csv.writerow(rate.values())
+                processed_responses.task_done()
+            except queue.Empty:
+                if processed_responses_done.is_set():
+                    break
+                else:
+                    continue
+
 def main() -> None:
     """ main """
 
     responses: queue.Queue[str] = queue.Queue()
-    processed_responses: list[Rate] = []
+    processed_responses: queue.Queue[Rate] = queue.Queue()
     threads: list[threading.Thread] = []
 
     process_rate_thread = threading.Thread(
         target=process_rate, args=(responses, processed_responses))
     process_rate_thread.start()
+
+    save_rates_thread = threading.Thread(
+        target=save_rates, args=(processed_responses,))
+    save_rates_thread.start()
 
     for working_day in business_days(date(2019,1,1), date(2019,1,15)):
         a_thread = threading.Thread(
@@ -74,8 +101,9 @@ def main() -> None:
 
     process_rate_thread.join()
 
-    print("\n".join([ str(p) for p in processed_responses]))
+    processed_responses_done.set()
 
+    save_rates_thread.join()
 
 if __name__ == "__main__":
 
