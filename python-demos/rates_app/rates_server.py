@@ -9,30 +9,41 @@ import re
 import json
 import requests
 
-# Replace the echo functionality with support for the following client command:
+# Task 1 - Cache Rate Results
 
-# GET 2019-01-03 EUR
+# Upgrade the application to check the database for a given exchange rate
+# (year, currency)
 
-# GET is the command name
-# 2019-01-03 is the date of the current rates to retrieve
-# EUR is the currency symbol to retrieve, DO NOT USE USD
+# If the exchange rate was previously retrieved and stored in the
+# database, then return it
 
-# Call the Rates API using the USD as the base to get the currency rate
-# for the specified year. There is no need to spawn another thread to call
-# the rates API
+# If the exchange rate is not in the database, then download it, add it to
+# the database and return it
 
-# Ideally your code will do the following:
+# Task 2 - Clear Rate Cache
 
-# 1. Use a regular expression with named capture groups to extract parts
-# of the command
+# Add a command for clearing the rate cache from the server command
+# prompt. Name the command "clear".
 
-# 2. Add a function named "process_client_command" to
-# "ClientConnectionThread" that will process the parsed command including
-# calling the API, extracting the API response, and send back the rate
-# value to the client
+## Bonus
 
-# 3. Send back an error message for an incorrectly formatted command or an
-# unsupported command name (only the GET command is supported)
+# Task 3 - Add support for getting multiple rates using the following
+# example command structures. Be sure to implement caching.
+
+# GET 2021-04-01 CAD,EUR,RUB
+# GET 2021-04-01 CAD;EUR;RUB
+# GET 2021-04-01 CAD|EUR|RUB
+# GET 2021-04-01 CAD:EUR;RUB
+# GET 2021-04-01 CAD|EUR:RUB
+
+# From the examples above, observe how the separator for the symbols can
+# be ":", ";", "|", or ",". In any combination. Consider using some of the
+# Regex examples we reviewed in class.
+
+# Hint: Public API can be called like this:
+# https://api.ratesapi.io/api/2010-01-12?base=USD&symbols=EUR,GBP
+
+# Hint: To add multiple cache entries, consider using the execute many API
 
 CLIENT_COMMAND_PARTS = [
     r"^(?P<name>[A-Z]*) ",
