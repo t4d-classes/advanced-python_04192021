@@ -32,17 +32,25 @@ def main() -> None:
 
     with pyodbc.connect(conn_string) as con:
 
-        symbol = "CAD"
+        # sql = " ".join([
+        #     "insert into rates (ClosingDate, CurrencySymbol, ExchangeRate)",
+        #     "values (?, ?, ?)",
+        # ])
+        # con.execute(sql, ('2021-04-01', 'EUR', 0.76))
+
+
+        # sql = " ".join([
+        #     "update rates set ExchangeRate = ?",
+        #     "where ratesid = ?",
+        # ])
+        # con.execute(sql, (1.24, 6))        
 
         sql = " ".join([
-            "select ClosingDate as closing, ExchangeRate as rate",
-            "from rates",
-            "where CurrencySymbol = ?"
+            "delete from rates",
+            "where ratesid = ?",
         ])
+        con.execute(sql, (7,))        
 
-        rates = con.execute(sql, (symbol,))
-        for rate in rates:
-            print(rate.closing, rate.rate)
 
 if __name__ == "__main__":
     main()

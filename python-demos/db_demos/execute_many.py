@@ -32,17 +32,24 @@ def main() -> None:
 
     with pyodbc.connect(conn_string) as con:
 
-        symbol = "CAD"
+        lots_of_rates = [
+            ('2021-01-07', 'EUR', 0.9),
+            ('2021-01-08', 'EUR', 0.8),
+            ('2021-01-09', 'EUR', 0.7),
+            ('2021-01-10', 'EUR', 0.9),
+            ('2021-01-11', 'EUR', 0.85),
+        ]
 
         sql = " ".join([
-            "select ClosingDate as closing, ExchangeRate as rate",
-            "from rates",
-            "where CurrencySymbol = ?"
+            "insert into rates (ClosingDate, CurrencySymbol, ExchangeRate)",
+            "values (?, ?, ?)",
         ])
 
-        rates = con.execute(sql, (symbol,))
-        for rate in rates:
-            print(rate.closing, rate.rate)
+        # for rate in lots_of_rates:
+        #     con.execute(sql, rate)
+
+        with con.cursor() as cur:
+            cur.executemany(sql, lots_of_rates)            
 
 if __name__ == "__main__":
     main()

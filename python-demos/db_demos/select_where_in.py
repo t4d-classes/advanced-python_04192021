@@ -32,17 +32,20 @@ def main() -> None:
 
     with pyodbc.connect(conn_string) as con:
 
-        symbol = "CAD"
+        symbols = ("CAD","EUR","USD")
 
         sql = " ".join([
-            "select ClosingDate as closing, ExchangeRate as rate",
+            "select ClosingDate as closing, ExchangeRate as rate, CurrencySymbol as symbol",
             "from rates",
-            "where CurrencySymbol = ?"
+            # "where CurrencySymbol = ? or CurrencySymbol = ?"
+            f"where CurrencySymbol in ({','.join([ '?' for _ in symbols ])})"
         ])
 
-        rates = con.execute(sql, (symbol,))
+        print(sql)
+
+        rates = con.execute(sql, symbols)
         for rate in rates:
-            print(rate.closing, rate.rate)
+            print(rate.closing, rate.symbol, rate.rate)
 
 if __name__ == "__main__":
     main()
