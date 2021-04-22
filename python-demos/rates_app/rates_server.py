@@ -3,12 +3,29 @@ from typing import Optional
 import multiprocessing as mp
 import sys
 import socket
+import threading
 
-# Create "ClientConnectionThread" class that inherits from "Thread"
+class ClientConnectionThread(threading.Thread):
+    """ client connection thread """
 
-# Each time a client connects, a new thread should be created with the
-# "ClientConnectionThread" class. The class is responsible for sending the
-# welcome message and interacting with the client, echoing messages
+    def __init__(self,
+                 conn: socket.socket,
+                 ) -> None:
+        threading.Thread.__init__(self)
+        self.conn = conn
+
+    def run(self) -> None:
+
+        self.conn.sendall(b"Connected to the Rate Server")
+
+        try:
+            while True:
+                data = self.conn.recv(2048)
+                if not data:
+                    break
+                self.conn.sendall(data)
+        except OSError:
+            pass
 
 def rate_server(host: str, port: int) -> None:
     """rate server"""
@@ -18,18 +35,12 @@ def rate_server(host: str, port: int) -> None:
         socket_server.bind((host, port))
         socket_server.listen()
 
-        conn, _ = socket_server.accept()
+        while True:
 
-        conn.sendall(b"Connected to the Rate Server")
+            conn, _ = socket_server.accept()
 
-        try:
-            while True:
-                data = conn.recv(2048)
-                if not data:
-                    break
-                conn.sendall(data)
-        except OSError:
-            pass
+            client_con_thread = ClientConnectionThread(conn)
+            client_con_thread.start()
 
 class RateServerError(Exception):
     """ rate server error class """
